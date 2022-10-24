@@ -1,3 +1,5 @@
+open Lexer
+open Asyntax
 open Format
 open x86_64
 
@@ -7,9 +9,9 @@ let input = "5 + 3 * 2"
 
 
 (* On construit notre AST bien typé grâce aux modules Lexer et Asyntax *)
-let lexeme_list = Lexer.alex input
-let ast = Asyntax.ast lexeme_list
-let tast = Asyntax.tast ast
+let lexeme_list = lexeme_list_of_str input
+let ast = ast lexeme_list
+let tast = tast ast
 
 
 

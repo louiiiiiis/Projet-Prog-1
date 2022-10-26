@@ -20,3 +20,7 @@ type ast =
 
 (* La fonction d'analyse syntaxique qui transforme une liste de lexemes en arbre syntaxique *)
 val tree : lexeme list -> ast
+
+
+(* Fonction qui vérifie le bon typage d'un arbre *)
+val ast_ok : ast -> bool

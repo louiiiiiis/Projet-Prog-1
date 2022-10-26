@@ -70,6 +70,13 @@ let at3 = tree lt3
 let at4 = tree lt4
 let at5 = tree lt5
 
+(* Tests de typage des arbres *)
+let b1 = ast_ok at1
+let b2 = ast_ok at2
+let b3 = ast_ok at3
+let b4 = ast_ok at4
+let b5 = ast_ok at5
+
 
 (* Affichage *)
 let () = (print_string (t1 ^ " -> "); (affiche_lexlist lt1); print_string " -> "; (affiche_ast at1); print_string "\n";

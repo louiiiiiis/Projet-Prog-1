@@ -16,9 +16,5 @@ type lexeme =
   | Mulf
 
 
-(* Une erreur d'analyse lexicale apparaît lorsqu'un caractère ou chaîne de caractères inconnue est renseignée en entrée *)
-exception LexError of char
-
-
 (* La fonction d'analyse lexicale qui transforme une chaîne de caractères en une liste de lexemes *)
 val lexeme_list_of_str : string -> lexeme list

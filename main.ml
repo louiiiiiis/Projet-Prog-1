@@ -2,46 +2,26 @@ open Lexer
 open Asyntax
 open Format
 open X86_64
+open Ast2asm
 
 
-(* On récupère l'expression en entrée *)
-let input = "5 + 3 * 2"
+(* On récupère le nom du fichier donnée en entrée *)
+let file = read_line ()
+let () = if not (String.equal (String.sub file ((String.length file) - 4) 4) ".exp") then failwith "\nFichier en entrée invalide.\nUne extention \".exp\" est attendue."
+let file_name = String.sub file 0 ((String.length file) - 4)
+
+(* On récupère ce qui est écrit dans le fichier *)
+let fileop = open_in file
+let input = input_line fileop
 
 
-(* On construit notre AST bien typé grâce aux modules Lexer et Asyntax *)
+(* On construit notre liste de lexemes puis notre AST, et on vérifie qu'il est bien typé *)
 let lexeme_list = lexeme_list_of_str input
 let ast = tree lexeme_list
 let b = ast_ok ast
 
 
-
-(* On écrit l'AST dans un fichier assembleur qui a le même nom que le fichier en entrée *)
-let () =
-  let code = {
-    text =
-      globl "main" ++
-      label "main" ++
-      movq (reg rax) (reg rdi) ++
-      call "print_int" ++
-      ret ++
-
-      inline "
-print_int:
-	movq %rdi %rsi
-	movq $S_int, %rdi
-	xorq %rax, %rax
-	call printf
-	ret
-";
-
-    data =
-      label "S_int" ++
-      string "%d\n";
-  } in
-  let c = open_out "out.s" in
-  let fmt = formatter_of_out_channel c in
-  X86_64.print_program fmt code;
-  close_out c
-
-
-
+(* Finalement on génère le code assembleur *)
+let () = s_of_ast ast file_name
+let () = print_string "Compilation effectuée avec succès.\n"
+let () = print_string ("Le fichier" ^ file_name ^ ".s peut être compilé avec la commande \"gc -no-pie " ^ file_name ^ " -o " ^ file_name ^ "\".\n")

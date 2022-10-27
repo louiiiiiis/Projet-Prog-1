@@ -23,7 +23,7 @@ type ast =
 let extr_brace l =
   let e = ref [] in
   let rec aux i = function
-    | []          -> failwith "Erreur d'analyse syntaxique.\nMauvais parenthésage." 
+    | []          -> failwith "\nErreur d'analyse syntaxique.\nMauvais parenthésage." 
     | Lbrace :: t -> e := Lbrace :: !e; aux (i + 1) t
     | Rbrace :: t -> if i = 1 then t else (e := Rbrace :: !e; aux (i - 1) t)
     | h :: t      -> e := h :: !e; aux i t
@@ -33,29 +33,33 @@ let extr_brace l =
 (* Et une fonction qui extrait simplement le premier bloc d'instructions d'une liste et renvoie un triplet comportant un indicateur de bloc, le bloc, et le reste de la liste*)
 (* L'indicateur de bloc vaut 0 pour un entier, 1 pour un flottant, 2 pour un bloc du type (exp), 3 pour int(exp), 4 pour float(exp), 5 pour +(exp) et 6 pour -(exp) *)
 let extr = function
-    | []           -> failwith "Erreur d'analyse syntaxique.\nPas d'expression à évaluer"
+    | []           -> failwith "\nErreur d'analyse syntaxique.\nPas d'expression à évaluer"
     | Int s :: t   -> (0, [Int s], t)
     | Float s :: t -> (1, [Float s] , t)
     | Lbrace :: t  -> let (exp, tt) = extr_brace t in (2, exp, tt)
-    | Rbrace :: t  -> failwith "Erreur d'analyse syntaxique.\nMauvais parenthésage."
+    | Rbrace :: t  -> failwith "\nErreur d'analyse syntaxique.\nMauvais parenthésage."
     | Iof :: t     -> (match t with
 			| Lbrace :: tt -> let (exp, ttt) = extr_brace tt in (3, exp, ttt)
-			| _                  -> failwith "Erreur d'analyse syntaxique.\nMauvaise utilisation de int, qui doit être suivi par une expression entre parenthèses.")
+			| _            -> failwith "\nErreur d'analyse syntaxique.\nMauvaise utilisation de int, qui doit être suivi par une expression entre parenthèses.")
     | Foi :: t     -> (match t with
 			| Lbrace :: tt -> let (exp, ttt) = extr_brace tt in (4, exp, ttt)
-			| _                  -> failwith "Erreur d'analyse syntaxique.\nMauvaise utilisation de float, qui doit être suivi par une expression entre parenthèses.")
+			| _            -> failwith "\nErreur d'analyse syntaxique.\nMauvaise utilisation de float, qui doit être suivi par une expression entre parenthèses.")
     | Sum :: t     -> (match t with
-			| Lbrace :: tt -> let (exp, ttt) = extr_brace tt in (5, exp, ttt)
-			| _                  -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par + si elle n'est pas suivie d'une expression entre parenthèses.")
+			| Int s :: tt   -> (0, [Int s], tt)
+                        | Float s :: tt -> (1, [Float s], tt)
+                        | Lbrace :: tt  -> let (exp, ttt) = extr_brace tt in (5, exp, ttt)
+			| _             -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par + si elle n'est pas suivie d'un nombre ou d'une expression entre parenthèses.")
     | Sub :: t     -> (match t with
-			| Lbrace :: tt -> let (exp, ttt) = extr_brace tt in (6, exp, ttt)
-			| _                  -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par - si elle n'est pas suivie d'une expression entre parenthèses.")
-    | Mul :: t     -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"*\"."
-    | Div :: t     -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"/\"."
-    | Mod :: t     -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"%\"."
-    | Sumf :: t    -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"+.\"."
-    | Subf :: t    -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"-.\"."
-    | Mulf :: t    -> failwith "Erreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"*.\"."
+			| Int s :: tt   -> (0, [Int s], tt)
+                        | Float s :: tt -> (1, [Float s], tt)
+			| Lbrace :: tt  -> let (exp, ttt) = extr_brace tt in (6, exp, ttt)
+			| _             -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par - si elle n'est pas suivie d'un nombre ou d'une expression entre parenthèses.")
+    | Mul :: t     -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"*\"."
+    | Div :: t     -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"/\"."
+    | Mod :: t     -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"%\"."
+    | Sumf :: t    -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"+.\"."
+    | Subf :: t    -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"-.\"."
+    | Mulf :: t    -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"*.\"."
 
 
 
@@ -105,25 +109,25 @@ let rec tree l =
       | Div :: t  -> let (i, e, tt) = extr t in eval (Adiv (ltree, aux i e)) tt
       | Mod :: t  -> let (i, e, tt) = extr t in eval (Amod (ltree, aux i e)) tt
       | Mulf :: t -> let (i, e, tt) = extr t in eval (Amulf (ltree, aux i e)) tt
-      | _         -> failwith "Erreur d'analyse syntaxique.\nDeux expressions ne peuvent pas se suivre sans opérateur entre les deux."
+      | _         -> failwith "\nErreur d'analyse syntaxique.\nDeux expressions ne peuvent pas se suivre sans opérateur entre les deux."
 
 
 (* Fonction qui teste le typage d'un arbre, déclenche une erreur si il est mauvais, renvoie true pour un entier et false pour un flottant *)
 let rec ast_ok =  function
     | Aint s         -> true
     | Afloat s       -> false
-    | Apos a         -> if (ast_ok a) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : +(expression) ne peut être appliqué qu'à une expression entière."
-    | Aneg a         -> if (ast_ok a) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : -(expression) ne peut être appliqué qu'à une expression entière."
-    | Asum (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) + (expression2) ne peut être appliqué qu'à des expressions entières."
-    | Asub (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) - (expression2) ne peut être appliqué qu'à des expressions entières."
-    | Amul (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) * (expression2) ne peut être appliqué qu'à des expressions entières."
-    | Adiv (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) / (expression2) ne peut être appliqué qu'à des expressions entières;"
-    | Amod (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) % (expression2) ne peut être appliqué qu'à des expressions entières."
-    | Asumf (a1, a2) -> if (not (ast_ok a1)) && (not (ast_ok a2)) then false else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) +. (expression2) ne peut être appliqué qu'à des expressions flottantes."
-    | Asubf (a1, a2) -> if (not (ast_ok a1)) && (not (ast_ok a2)) then false else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) -. (expression2) ne peut être appliqué qu'à des expressions flottantes."
-    | Amulf (a1, a2) -> if (not (ast_ok a1)) && (not (ast_ok a2)) then false else failwith "Erreur d'analyse syntaxique.\nMauvais typage : (expression1) *. (expression2) ne peut être appliqué qu'à des expressions flottantes."
-    | Aiof a         -> if not (ast_ok a) then true else failwith "Erreur d'analyse syntaxique.\nMauvais typage : int(expression) ne peut être appliqué qu'à une expression flottante."
-    | Afoi a         -> if (ast_ok a) then false else failwith "Erreur d'analyse syntaxique.\nMauvais typage : float(expression) ne peut être appliqué qu'à une expression entière."
+    | Apos a         -> if (ast_ok a) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : +(expression) ne peut être appliqué qu'à une expression entière."
+    | Aneg a         -> if (ast_ok a) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : -(expression) ne peut être appliqué qu'à une expression entière."
+    | Asum (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) + (expression2) ne peut être appliqué qu'à des expressions entières."
+    | Asub (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) - (expression2) ne peut être appliqué qu'à des expressions entières."
+    | Amul (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) * (expression2) ne peut être appliqué qu'à des expressions entières."
+    | Adiv (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) / (expression2) ne peut être appliqué qu'à des expressions entières;"
+    | Amod (a1, a2)  -> if (ast_ok a1) && (ast_ok a2) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) % (expression2) ne peut être appliqué qu'à des expressions entières."
+    | Asumf (a1, a2) -> if (not (ast_ok a1)) && (not (ast_ok a2)) then false else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) +. (expression2) ne peut être appliqué qu'à des expressions flottantes."
+    | Asubf (a1, a2) -> if (not (ast_ok a1)) && (not (ast_ok a2)) then false else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) -. (expression2) ne peut être appliqué qu'à des expressions flottantes."
+    | Amulf (a1, a2) -> if (not (ast_ok a1)) && (not (ast_ok a2)) then false else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : (expression1) *. (expression2) ne peut être appliqué qu'à des expressions flottantes."
+    | Aiof a         -> if not (ast_ok a) then true else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : int(expression) ne peut être appliqué qu'à une expression flottante."
+    | Afoi a         -> if (ast_ok a) then false else failwith "\nErreur d'analyse syntaxique.\nMauvais typage : float(expression) ne peut être appliqué qu'à une expression entière."
 
 
 

@@ -60,7 +60,7 @@ let lexeme_list_of_str s =
 	end 
       else
         raise (LexError s.[!i])
-    with LexError c -> failwith ("Erreur d'analyse lexicale.\nCaractère invalide : \"" ^ (Char.escaped c) ^ "\".")
+    with LexError c -> failwith ("\nErreur d'analyse lexicale.\nCaractère invalide : \"" ^ (Char.escaped c) ^ "\".")
   done;
   List.rev !l
 

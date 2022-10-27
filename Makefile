@@ -1,4 +1,5 @@
-all: test
+all: lexer.cmo asyntax.cmo x86_64.cmo ast2asm.cmo main.ml
+	ocamlc lexer.cmo asyntax.cmo x86_64.cmo ast2asm.cmo main.ml -o aritha
 
 
 lexer.cmo: lexer.ml lexer.cmi
@@ -51,7 +52,7 @@ t5: t5.s
 
 
 clean:
-	rm -rf *.cmi *.cmo
+	rm -rf aritha *.cmi *.cmo *.s
 
 clean_test:
 	rm -rf test *.s t1 t2 t3 t4 t5

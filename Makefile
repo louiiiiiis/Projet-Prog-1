@@ -1,4 +1,4 @@
-all: x86_64.cmo test
+all: test
 
 
 lexer.cmo: lexer.ml lexer.cmi
@@ -19,10 +19,16 @@ x86_64.cmi: x86_64.mli
 	ocamlc -c x86_64.mli
 
 
+ast2asm.cmo: ast2asm.ml ast2asm.cmi
+	ocamlc -c ast2asm.ml
+ast2asm.cmi: asyntax.cmo x86_64.cmo ast2asm.mli
+	ocamlc -c ast2asm.mli
 
 
-test: asyntax.cmo test.ml
-	ocamlc lexer.cmo asyntax.cmo test.ml -o test
+
+
+test: lexer.cmo asyntax.cmo x86_64.cmo ast2asm.cmo test.ml
+	ocamlc lexer.cmo asyntax.cmo x86_64.cmo ast2asm.cmo test.ml -o test
 
 
 

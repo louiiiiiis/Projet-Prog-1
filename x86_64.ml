@@ -82,6 +82,14 @@ let r13b = "%r13b"
 let r14b = "%r14b"
 let r15b = "%r15b"
 
+
+(* registres flottants *)
+let xmm0 = "%xmm0"
+let xmm1 = "%xmm1"
+let xmm2 = "%xmm2"
+
+
+
 type label = string
 
 type 'size operand = formatter -> unit -> unit
@@ -135,6 +143,11 @@ let pr_list fmt pr = function
 let pr_ilist fmt l =
   pr_list fmt (fun fmt i -> fprintf fmt "%i" i) l
 
+(* pour les flottants *)
+let pr_flist fmt l =
+  pr_list fmt (fun fmt f -> fprintf fmt "%f" f) l
+
+
 let pr_alist fmt l =
   pr_list fmt (fun fmt (a : label) -> fprintf fmt "%s" a) l
 
@@ -157,6 +170,9 @@ let movzbl a b = ins "movzbl %a, %s" a () b
 let movzbq a b = ins "movzbq %a, %s" a () b
 let movzwl a b = ins "movzwl %a, %s" a () b
 let movzwq a b = ins "movzwq %a, %s" a () b
+
+(* mov flottant *)
+let movsd a b = ins "movsd %a, %a" a () b ()
 
 let leab op r = ins "leab %a, %s" op () r
 let leaw op r = ins "leaw %a, %s" op () r
@@ -195,6 +211,13 @@ let imulq a b = ins "imulq %a, %a" a () b ()
 let idivq a = ins "idivq %a" a ()
 let cqto = S "\tcqto\n"
 
+
+(* arithmétique des flottants *)
+let addsd a b = ins "addsd %a, %a" a () b ()
+let subsd a b = ins "subsd %a, %a" a () b ()
+let mulsd a b = ins "mulsd %a, %a" a () b ()
+
+
 let notb a = ins "notb %a" a ()
 let notw a = ins "notw %a" a ()
 let notl a = ins "notl %a" a ()
@@ -229,6 +252,12 @@ let sarb a b = ins "sarb %a, %a" a () b ()
 let sarw a b = ins "sarw %a, %a" a () b ()
 let sarl a b = ins "sarl %a, %a" a () b ()
 let sarq a b = ins "sarq %a, %a" a () b ()
+
+
+(* pour les conversions entier - flottant *)
+let cvtsi2sd a b = ins "cvtsi2sd %a, %a" a () b ()
+let cvtsd2si a b = ins "cvtsd2si %a, %a" a () b ()
+
 
 let jmp (z: label) = ins "jmp %s" z
 let jmp_star o = ins "jmp *%a" o ()
@@ -288,6 +317,11 @@ let dint  l = ins ".int %a" pr_ilist l
 let dword l = ins ".word %a" pr_ilist l
 let dquad l = ins ".quad %a" pr_ilist l
 let string s = ins ".string %S" s
+
+(* pour mettre des entiers et flottants dans la data *)
+let int l = ins ".int %a" pr_ilist l
+let float l = ins ".double %a" pr_flist l
+
 
 let address l = ins ".quad %a" pr_alist l
 let space n = ins ".space %d" n

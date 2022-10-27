@@ -1,5 +1,6 @@
 open Lexer
 open Asyntax
+open Ast2asm
 
 
 (* Fontion qui transorme une lexeme en string *)
@@ -84,5 +85,18 @@ let () = (print_string (t1 ^ " -> "); (affiche_lexlist lt1); print_string " -> "
           print_string (t3 ^ " -> "); (affiche_lexlist lt3); print_string " -> "; (affiche_ast at3); print_string "\n";
           print_string (t4 ^ " -> "); (affiche_lexlist lt4); print_string " -> "; (affiche_ast at4); print_string "\n";
           print_string (t5 ^ " -> "); (affiche_lexlist lt5); print_string " -> "; (affiche_ast at5); print_string "\n")
+
+
+(* Génération des fichiers assembleur *)
+let () = s_of_ast at1 "t1"
+let () = s_of_ast at2 "t2"
+let () = s_of_ast at3 "t3"
+let () = s_of_ast at4 "t4"
+let () = s_of_ast at5 "t5"
+
+
+
+
+
 
 

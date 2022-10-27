@@ -129,6 +129,12 @@ val r14b: [`B] register
 val r15b: [`B] register
   (** registres 8 bits *)
 
+val xmm0: [`Q] register
+val xmm1: [`Q] register
+val xmm2: [`Q] register
+  (** registres flottants **)
+
+
 (** {1 Opérandes } *)
 
 type 'size operand
@@ -185,6 +191,10 @@ val movzwq: [`W] operand -> [`Q] register -> text
 val movabsq: [`Q] operand -> [`Q] register -> text
   (** copie une valeur immédiate 64 bits dans un registre *)
 
+
+val movsd: [`Q] operand -> [`Q] operand -> text
+  (** pour les flottants **)
+
 (** {2 Arithmétique } *)
 
 val leab: [`B] operand -> [`B] register -> text
@@ -223,6 +233,13 @@ val imulq: [`Q] operand -> [`Q] operand -> text
 
 val idivq: [`Q] operand -> text
 val cqto: text
+
+
+val addsd: [`Q] operand -> [`Q] operand -> text
+val subsd: [`Q] operand -> [`Q] operand -> text
+val mulsd: [`Q] operand -> [`Q] operand -> text
+  (** Arithmétique des flottants **)
+
 
 (** {2 Opérations logiques } *)
 
@@ -265,6 +282,11 @@ val sarb: [`B] operand -> [`B] operand -> text
 val sarw: [`W] operand -> [`W] operand -> text
 val sarl: [`L] operand -> [`L] operand -> text
 val sarq: [`Q] operand -> [`Q] operand -> text
+
+(* Conversions entier - flottant *)
+val cvtsi2sd: [`Q] operand -> [`Q] operand -> text
+val cvtsd2si: [`Q] operand -> [`Q] operand -> text
+
 
 (** {2 Sauts } *)
 
@@ -353,6 +375,12 @@ val dword : int list -> data
 val dint : int list -> data
 val dquad : int list -> data
   (** place une liste de valeurs sur 1/2/4/8 octets dans la zone data *)
+
+
+val int : int list -> data
+val float : float list -> data
+  (** place un entier ou un flottant dans la data **)
+
 
 val address: label list -> data
   (** place une liste d'adresses dans la zone data (avec .quad) *)

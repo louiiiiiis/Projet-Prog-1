@@ -24,4 +24,4 @@ let b = ast_ok ast
 (* Finalement on génère le code assembleur *)
 let () = s_of_ast ast file_name
 let () = print_string "Compilation effectuée avec succès.\n"
-let () = print_string ("Le fichier" ^ file_name ^ ".s peut être compilé avec la commande \"gc -no-pie " ^ file_name ^ " -o " ^ file_name ^ "\".\n")
+let () = print_string ("Le fichier " ^ file_name ^ ".s peut être compilé avec la commande \"gc -no-pie " ^ file_name ^ ".s -o " ^ file_name ^ "\".\n")

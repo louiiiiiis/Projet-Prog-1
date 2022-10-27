@@ -1,9 +1,12 @@
+(* Ce fichier de test n'a été utile que pour tester les étapes intermédiaires du travail, quand tous les modules n'étaient pas encore fonctionnels *)
+(* Je le laisse quand même, pour la culture *)
+
 open Lexer
 open Asyntax
 open Ast2asm
 
 
-(* Fontion qui transorme une lexeme en string *)
+(* Fontion qui transorme un lexeme en string *)
 let str_of_lexeme = function
   | Int s   -> "Int(" ^ s ^ ")"   
   | Float s -> "Float(" ^ s ^ ")"
@@ -47,6 +50,7 @@ let rec affiche_ast = function
   | Amulf (a1, a2) -> print_string "("; affiche_ast a1; print_string ")"; print_string "*."; print_string "("; affiche_ast a2; print_string ")"
   | Aiof a         -> print_string "Int("; affiche_ast a; print_string ")"
   | Afoi a         -> print_string "Float("; affiche_ast a; print_string ")"
+
 
 
 (* Les valeurs de test *)

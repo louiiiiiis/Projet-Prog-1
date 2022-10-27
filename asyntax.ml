@@ -1,6 +1,6 @@
 open Lexer
 
-(* Définition du type qui nous permet de représenter un arbre syntaxique *)
+(* Définition du type ast pour représenter les arbres syntaxiques *)
 type ast =
   | Aint of string
   | Afloat of string
@@ -59,8 +59,10 @@ let extr = function
 
 
 
-(* Pour l'analyse lexicale à proprement parler on a besoin de deux fonctions mutuellement récursives *)
-(* La première évalue une expression et la seconde évalue une demi-expression commençant par un opérateur et prenant en entrée le sous-arbre gauche de cet opérateur *)
+(* Pour l'analyse syntaxique à proprement parler on a besoin de deux fonctions mutuellement récursives *)
+(* La première évalue une expression et la seconde évalue une demi-expression commençant par un opérateur, elle prend également en entrée le sous-arbre gauche de cet opérateur *)
+(* Pour évaluer une expression on évalue récursivement son premier bloc en formant un sous-arbre gauche puis on évalue la demi-expression restante *)
+(* Pour évaluer une demi-expression on distingue les cas selon l'opérateur afin de respecter les priorités d'opération, puis on évalue récursivement ce qu'il reste à droite *)
 let rec tree l =
   let (i, e, t) = extr l in
   let aux i e = match i with

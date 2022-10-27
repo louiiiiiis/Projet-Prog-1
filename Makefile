@@ -30,8 +30,28 @@ ast2asm.cmi: asyntax.cmo x86_64.cmo ast2asm.mli
 test: lexer.cmo asyntax.cmo x86_64.cmo ast2asm.cmo test.ml
 	ocamlc lexer.cmo asyntax.cmo x86_64.cmo ast2asm.cmo test.ml -o test
 
+compile_tests: t1 t2 t3 t4 t5
+
+t1: t1.s
+	gcc -no-pie t1.s -o t1
+
+t2: t2.s
+	gcc -no-pie t2.s -o t2
+
+t3: t3.s
+	gcc -no-pie t3.s -o t3
+
+t4: t4.s
+	gcc -no-pie t4.s -o t4
+
+t5: t5.s
+	gcc -no-pie t5.s -o t5
+
 
 
 
 clean:
-	rm -rf test *.cmi *.cmo
+	rm -rf *.cmi *.cmo
+
+clean_test:
+	rm -rf test *.s t1 t2 t3 t4 t5

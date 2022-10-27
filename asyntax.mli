@@ -1,6 +1,6 @@
 open Lexer
 
-(* Définition du type ast *)
+(* Définition du type ast pour représenter les arbres syntaxiques *)
 type ast =
   | Aint of string
   | Afloat of string
@@ -23,4 +23,5 @@ val tree : lexeme list -> ast
 
 
 (* Fonction qui vérifie le bon typage d'un arbre *)
+(* Elle déclenche une erreur si le typage est mauvais, et sinon renvoie true pour les entiers et false pour les flottants *)
 val ast_ok : ast -> bool

@@ -1,0 +1,79 @@
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\setminted{fontsize=\small, frame=single}
+\usepackage{hyperref}
+
+\title{Projet Programmation 1}
+\subtitle{Premier projet – Compilation d’expressions arithmétiques}
+\author{Louis Lachaize}
+\date{Pour le 30 octobre 2022}
+
+
+\begin{document}
+\maketitle
+
+Le code de ce projet est disponible à l'adresse \url{https://github.com/louiiiiiis/Projet-Prog-1.git}. Ce document détaille les principales étapes de ce projet.
+
+
+
+\section{Analyse lexicale (sans utiliser ocamllex)}
+
+Pas de difficultés particulières pour le lexer, on se contente de parcourir l'entrée de type \texttt{string} caractère par caractère pour la transformer en \texttt{lexeme list}. Il faut simplement traiter tous les cas et ne pas en oublier.
+
+
+
+\section{Analyse syntaxique (sans utiliser ocamlyacc)}
+
+Les choses se compliquent pour le parser. La principale difficulté est de bien gérer les priorités d'opération. Pour cela on utilise une fonction auxiliaire qui extrait le premier "bloc" d'instruction d'une \texttt{lexeme list}. Le parser va alors transformer ce bloc en \texttt{ast} (ça sera le fils gauche) puis regarder le prochain opérateur :
+\begin{itemize}
+    \item si c'est \texttt{+} ou \texttt{-} il devient la racine de l'\texttt{ast} et son fils droit est tout le reste de la liste.
+    \item si c'est \texttt{*}, \texttt{/} ou \texttt{\%} il devient un noeud dont le fils droit est le prochain "bloc", et ce noeud devient récursivement le fils gauche du prochain opérateur.
+\end{itemize}
+\underline{Remarque :} J'ai choisi que les opérateurs \texttt{*}, \texttt{/} et \texttt{\%} avaient la même priorité, si ils se suivent dans une expression ils sont lus de gauche à droite.
+
+
+
+\section{Conversion en assembleur}
+
+Pour cette partie on remercie Jean-Christophe Filliâtre et son module \texttt{x86\_64} qui nous permet d'écrire facilement un fichier assembleur. Le problème principal de cette partie est la gestion des flottants, qui n'est pas traitée par Jean-Christophe : il faut donc modifier la librairie pour rajouter les opérations entre flottants et leur définition dans la data. L'utilisation de la pile est aussi plus compliquée avec les flottants mais on résoud ce problème en manipulant le pointeur \texttt{rsp}.
+
+
+
+\section{Main et Makefile}
+
+Le fichier \texttt{main.ml} ouvre le fichier donné en entrée puis génère le fichier \texttt{asm} grâce aux modules précédents. La commande \texttt{make} dans le terminal permet de compiler tout notre code en un exécutable \texttt{aritha}. On peut donc demander
+\begin{minted}{applescript}
+./aritha expression.exp
+\end{minted}
+pour générer le fichier \texttt{expression.s}.
+
+
+
+\section{Tests}
+
+Le dossier \texttt{tests} contient 6 tests qui peuvent être essayés :
+\begin{minted}{applescript}
+5 + 3 * 2 -8
+\end{minted}
+\begin{minted}{applescript}
+51 +78/   56 % 6 + 6 *-3
+\end{minted}
+\begin{minted}{applescript}
+23. +. 35.45 *. float( -22+4+ int(2.*.3.02) ) -. 3.
+\end{minted}
+\begin{minted}{applescript}
+1 + 2 *7 /2 + 14%5 + int( -4. *. -3.1 )
+\end{minted}
+\begin{minted}{applescript}
+1 +. 2
+\end{minted}
+\begin{minted}{applescript}
+1 + 2*(3+(4+1)
+\end{minted}
+Les tests 1, 2 et 4 renvoient un entier, le test 3 renvoie un flottant et les deux derniers tests lèvent une erreur.
+
+
+
+
+\end{document}

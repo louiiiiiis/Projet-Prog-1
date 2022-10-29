@@ -50,8 +50,8 @@ let extr = function
                         | Lbrace :: tt  -> let (exp, ttt) = extr_brace tt in (5, exp, ttt)
 			| _             -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par + si elle n'est pas suivie d'un nombre ou d'une expression entre parenthèses.")
     | Sub :: t     -> (match t with
-			| Int s :: tt   -> (0, [Int s], tt)
-                        | Float s :: tt -> (1, [Float s], tt)
+			| Int s :: tt   -> (0, [Int ("-" ^ s)], tt)
+                        | Float s :: tt -> (1, [Float ("-" ^ s)], tt)
 			| Lbrace :: tt  -> let (exp, ttt) = extr_brace tt in (6, exp, ttt)
 			| _             -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par - si elle n'est pas suivie d'un nombre ou d'une expression entre parenthèses.")
     | Mul :: t     -> failwith "\nErreur d'analyse syntaxique.\nUne expression ne peut pas commencer par \"*\"."
